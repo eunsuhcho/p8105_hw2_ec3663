@@ -70,4 +70,15 @@ snp_df =
   relocate(year, month)
 ```
 
+Cleaning the data in unemployment.csv
+
+```{r clean_unemp.csv}
+unemployment_df =
+  read.csv("data/unemployment.csv") |> 
+  pivot_longer(
+    Jan:Dec,
+    names_to = "month") |> 
+  rename_with(tolower, everything())
+```
+
 
