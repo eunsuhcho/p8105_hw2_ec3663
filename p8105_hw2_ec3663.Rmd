@@ -16,7 +16,7 @@ library(tidyverse)
 
 Cleaning the data in pols-month.csv
 
-```{r clean pols-month.csv}
+```{r clean_pols-month.csv}
 pols_month_df =
   read.csv("data/pols-month.csv") |> 
   janitor::clean_names() |> 
@@ -35,13 +35,12 @@ pols_month_df =
       "09" ~ "Sep",
       "10" ~ "Oct",
       "11" ~ "Nov",
-      "12" ~ "Dec")) |> 
-  mutate(
+      "12" ~ "Dec"),
     president = case_when(
       prez_gop == 1 ~ "gop",
-      prez_dem == 1 ~ "dem")) |> 
-  select(-prez_dem, -prez_gop, -day) |> 
-  relocate(year, month, president)
+      prez_dem == 1 ~ "dem"),
+    year = as.numeric(year)) |> 
+  select(-prez_dem, -prez_gop, -day)
 ```
 
 Cleaning the data in snp.csv
@@ -65,9 +64,11 @@ snp_df =
       "9" ~ "Sep",
       "10" ~ "Oct",
       "11" ~ "Nov",
-      "12" ~ "Dec")) |> 
+      "12" ~ "Dec"),
+     year = ifelse(as.numeric(year) >= 0 & as.numeric(year) <= 15,
+                as.numeric(year) + 2000, as.numeric(year) + 1900)) |> 
   select(-day) |> 
-  relocate(year, month)
+  relocate("year", "month")
 ```
 
 Cleaning the data in unemployment.csv
@@ -80,5 +81,14 @@ unemployment_df =
     names_to = "month") |> 
   rename_with(tolower, everything())
 ```
+
+Merging snp into pols
+
+```{r merge_snp_into_pols}
+snp_pols_df =
+  full_join(pols_month_df, snp_df, by = c("year", "month"))
+```
+
+
 
 
