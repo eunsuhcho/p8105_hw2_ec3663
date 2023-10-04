@@ -84,23 +84,39 @@ Cleaning Mr. Trash Wheel data
 ```{r clean_mtw}
 library(readxl)
 
-mr_trash_wheel_df =
-  read_excel("data/trash_wheel_collection_data.xlsx", sheet = 1, range = "A2:N550") |> 
-  mutate()
+mrtrashwheel_df =
+  read_excel("data/trash_data.xlsx", sheet = 1, range = "A2:N586") |> 
+  janitor::clean_names() |> 
+  mutate(homes_powered = (weight_tons * 500) / 30,
+         trash_wheel = 1,
+         year = as.numeric(year))
 ```
 
 Cleaning Professor Trash Wheel data
 
 ```{r clean_ptw}
-prof_trash_wheel_df =
-  read_excel("data/trash_wheel_collection_data.xlsx", sheet = 2, range = "A2:M96")
+proftrashwheel_df =
+  read_excel("data/trash_data.xlsx", sheet = 2, range = "A2:M108") |> 
+  janitor::clean_names() |> 
+  mutate(homes_powered = (weight_tons * 500) / 30,
+         trash_wheel = 2)
 ```
 
 Cleaning Gwynnda data
 ```{r clean_gwynnda}
 gwynnda_df =
-  read_excel("data/trash_wheel_collection_data.xlsx", sheet = 3, range = "A2:K110")
+  read_excel("data/trash_data.xlsx", sheet = 4, range = "A2:L157") |> 
+  janitor::clean_names() |> 
+  mutate(homes_powered = (weight_tons * 500) / 30,
+         trash_wheel = 3)
 ```
 
+## Joining all 3 trash wheel datasets
+
+```{r joining_trash}
+trashwheel_df =
+  bind_rows(mrtrashwheel_df, proftrashwheel_df, gwynnda_df) |> 
+  janitor::clean_names()
+```
 
 
