@@ -143,10 +143,29 @@ developed_mci_df =
 
 ## Data description
 
-The process begins with importing `MCI_baseline.csv` and using `skip = 1` to read the file starting at row 2. Because the variables `sex` and `apoe4` are coded as numeric values, the `mutate` function is used to recode the values in the columns to the corresponding status. The `filter` function is used to remove any participants who have no MCI at baseline. `r nrow(baseline_df)` participants were recruited and of these participants, `r nrow(developed_mci_df)` developed MCI. The average baseline age is `r mean(pull(baseline_df, current_age))`. The proportion of women in the study who are APOE4 carriers is `r sum(with(baseline_df, sex == "female" | apoe4 == "APOE4 carrier")) / nrow(baseline_df) * 100`%.
+The process begins with importing `MCI_baseline.csv` and using `skip = 1` to read the file starting at row 2. Because the variables `sex` and `apoe4` are coded as numeric values, the `mutate` function is used to recode the values in the columns to the corresponding status. The `filter` function is used to remove any participants who have no MCI at baseline. `r nrow(baseline_df)` participants were recruited and of these participants, `r nrow(developed_mci_df)` developed MCI. The average baseline age is `r mean(pull(baseline_df, current_age))`. The proportion of women in the study who are APOE4 carriers is `r sum(with(baseline_df, sex == "female" & apoe4 == "APOE4 carrier")) / length(with(baseline_df, sex[sex == "female"])) * 100`%.
 
+## Cleaning amyloid data
 
+```{r clean_amyloid}
+amyloid_df =
+  read_csv("data/mci_amyloid.csv", skip = 1) |> 
+  janitor::clean_names() |> 
+  rename(id = study_id)
+```
 
+## Data description
 
+The `mci_amyloid.csv` file is imported and `skip = 1` is used to read the file starting at row 2. The `rename()` function is used to change the variable `study_id` to `id` for the eventual joining of the baseline and amyloid datasets. There are `r nrow(amyloid_df)` observations and `r ncol(amyloid_df)` variables. The dataset describes the amyloid beta 42/40 ratio recorded for the participants across the longitudinal study at various times.
 
+There are `r nrow(baseline_df)` observations in the baseline dataset and `r nrow(amyloid_df)` observations in the amyloid dataset, indicating that some participants only appear in the amyloid dataset after both datasets are cleaned.
+
+## Joining baseline and amyloid data and exporting as CSV
+
+```{r join_and_export_mci}
+joined_mci_df =
+  inner_join(baseline_df, amyloid_df, by = "id")
+
+write.csv(joined_mci_df, file = "data/joined_mci_df.csv")
+```
 
