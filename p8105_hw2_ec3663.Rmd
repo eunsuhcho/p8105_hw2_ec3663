@@ -169,3 +169,6 @@ joined_mci_df =
 write.csv(joined_mci_df, file = "data/joined_mci_df.csv")
 ```
 
+## Data description
+
+The resulting dataset has only `r nrow(joined_mci_df)` observations. The average age at baseline is `r mean(pull(joined_mci_df, current_age))` years. There are `r sum(with(joined_mci_df, sex == "female"))` women in the dataset, and there are `r sum(with(joined_mci_df, apoe4 == "APOE4 carrier"))` carriers of the APOE4 gene. The proportion of women who are APOE4 carriers is `r sum(with(joined_mci_df, sex == "female" & apoe4 == "APOE4 carrier")) / sum(with(joined_mci_df, sex == "female")) * 100`%.
